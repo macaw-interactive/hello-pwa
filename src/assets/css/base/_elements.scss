@@ -1,0 +1,41 @@
+html {
+	box-sizing: border-box;
+	font: #{$base-fontsize}/#{$base-lineheight} $default-font;
+	color: $color-text;
+	-webkit-tap-highlight-color: transparent;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
+body {
+	overflow-x: hidden;
+	position: relative;
+}
+
+p {
+	margin: 0 0 1em;	
+	
+	a {
+		color: $color-primary;
+	}
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+
+	&:hover, &:active {
+		text-decoration: underline;
+	}
+}
+
+figure {
+	margin: 0;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}

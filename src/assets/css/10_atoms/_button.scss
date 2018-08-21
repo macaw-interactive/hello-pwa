@@ -1,0 +1,53 @@
+.a-btn {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+    border: 0;
+    outline: none;
+    // white-space: nowrap;
+    transition: .2s;
+    padding: 0.85em 1.28em;
+    line-height: 1.5;
+    text-decoration: none;
+    font-family: $default-font;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    user-select: none;
+    background-color: $color-secondary;
+    color: $color-primary;
+    
+    &:hover {
+        background-color: darken($color-secondary, 10%);
+    }
+    
+    &:active, &:focus {
+        background-color: darken($color-secondary, 20%);
+    }
+
+    .a-loader {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        opacity: 0;
+        pointer-events: none;
+        transition: .2s ease-in-out opacity;
+    }
+
+    &--loading {
+        position: relative;
+        padding-right: 60px;
+        cursor: not-allowed;
+
+        &:hover, &:active, &:focus {
+            background-color: $color-secondary;
+        }
+
+        .a-loader {
+            opacity: 1;
+        }
+    }
+}
