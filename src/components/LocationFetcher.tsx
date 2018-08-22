@@ -27,7 +27,7 @@ enum LocationSource {
     PREDEFINED = 'predefined',
     MANUAL = 'manual',
     VISIBILITY_CHANGE = 'visibility_change',
-    PAGE_ENTER = 'page_enter'
+    PAGE_LOAD = 'page_load',
 }
 
 export class LocationFetcher extends React.Component<any, LocationFetcherState> {
@@ -43,18 +43,16 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
 
         this.state = {
             history: this.getHistoryFromStorage(),
-            isGeoLoading: this.hasLocationPermission()
+            isGeoLoading: false
         };
 
         this.geoError = this.geoError.bind(this);
         this.clearLocationHistory = this.clearLocationHistory.bind(this);
-        this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
     }
 
     public componentDidMount() {
-        if (this.hasLocationPermission()) {
-            document.addEventListener('visibilitychange', this.handleVisibilityChange, false);
-        }
+        document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this, LocationSource.VISIBILITY_CHANGE), false);
+        window.addEventListener('load', this.handleVisibilityChange.bind(this, LocationSource.PAGE_LOAD));
     }
 
     public componentDidUpdate() {
@@ -80,6 +78,7 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
                             <table className="m-table o-location-fetcher__overview">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Date/time</th>
                                         <th>Latitude</th>
                                         <th>Longitude</th>
@@ -92,6 +91,7 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
                                 <tbody>
                                     {this.state.history.map((historyItem: LocationHistory, index: number) => (
                                         <tr key={index}>
+                                            <td>{this.state.history.length - index}</td>
                                             <td>{this.getFormattedDate(historyItem.date)}</td>
                                             <td>{historyItem.location.latitude}</td>
                                             <td>{historyItem.location.longitude}</td>
@@ -129,9 +129,9 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
         this.setState({ isGeoLoading: false });
     }
 
-    private handleVisibilityChange(): void {
-        if (!document.hidden && !this.state.isGeoLoading) {
-            this.fetchLocation(LocationSource.VISIBILITY_CHANGE);
+    private handleVisibilityChange(locationSource: LocationSource): void {
+        if (!document.hidden && !this.state.isGeoLoading && this.hasLocationPermission()) {
+            this.fetchLocation(locationSource);
         }
     }
 
