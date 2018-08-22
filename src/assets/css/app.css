@@ -364,7 +364,16 @@ img {
   display: block;
   max-width: 100%; }
 
-.a-btn {
+.a-build-time {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 2px 5px;
+  background-color: #FFF;
+  font-family: Courier;
+  font-size: 11px; }
+
+.a-btn, .a-btn--primary, .a-btn--secondary {
   display: inline-block;
   text-align: left;
   vertical-align: middle;
@@ -382,13 +391,22 @@ img {
   font-weight: bold;
   position: relative;
   user-select: none;
-  background-color: #61DAFB;
-  color: #222; }
-  .a-btn:hover {
-    background-color: #2fcefa; }
-  .a-btn:active, .a-btn:focus {
-    background-color: #06bef0; }
-  .a-btn .a-loader {
+  text-align: center; }
+  .a-btn--primary {
+    background-color: #61DAFB;
+    color: #222; }
+    .a-btn--primary:hover {
+      background-color: #2fcefa; }
+    .a-btn--primary:active, .a-btn--primary:focus {
+      background-color: #06bef0; }
+  .a-btn--secondary {
+    background-color: #DDD;
+    color: #222; }
+    .a-btn--secondary:hover {
+      background-color: #c4c4c4; }
+    .a-btn--secondary:active, .a-btn--secondary:focus {
+      background-color: #aaaaaa; }
+  .a-btn .a-loader, .a-btn--primary .a-loader, .a-btn--secondary .a-loader {
     position: absolute;
     right: 15px;
     top: 15px;
@@ -446,6 +464,9 @@ img {
   border: 1px solid #e4e4e4;
   margin: 20px 0;
   width: 100%; }
+  .m-table__container {
+    width: 100%;
+    overflow-y: auto; }
   .m-table .row--alt td {
     background-color: #AAA; }
   .m-table th {
@@ -462,6 +483,11 @@ img {
   text-align: left;
   font-size: 13px; }
 
+.o-location-fetcher__btn-row {
+  margin: -5px; }
+  .o-location-fetcher__btn-row .a-btn {
+    margin: 5px; }
+
 .App {
   text-align: center; }
   .App-logo {
@@ -470,8 +496,11 @@ img {
     height: 80px; }
   .App-header {
     background-color: #222;
-    padding: 20px;
+    padding: 45px 20px 20px;
     color: white; }
+    @media (min-width: 550px) {
+      .App-header {
+        padding-top: 20px; } }
   .App-title {
     font-size: 1.5em; }
   .App-intro {

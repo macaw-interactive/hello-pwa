@@ -1,4 +1,17 @@
-.a-btn {
+@mixin button-variant($color, $background) {
+    background-color: $background;
+    color: $color;
+    
+    &:hover {
+        background-color: darken($background, 10%);
+    }
+
+    &:active, &:focus {
+        background-color: darken($background, 20%);
+    }
+}
+
+.a-btn, %a-btn {
     display: inline-block;
     text-align: left;
     vertical-align: middle;
@@ -17,15 +30,16 @@
     font-weight: bold;
     position: relative;
     user-select: none;
-    background-color: $color-secondary;
-    color: $color-primary;
-    
-    &:hover {
-        background-color: darken($color-secondary, 10%);
+    text-align: center;
+
+    &--primary {
+        @extend %a-btn;
+        @include button-variant($color-primary, $color-secondary);
     }
-    
-    &:active, &:focus {
-        background-color: darken($color-secondary, 20%);
+
+    &--secondary {
+        @extend %a-btn;
+        @include button-variant($color-primary, #DDD);
     }
 
     .a-loader {

@@ -15,6 +15,7 @@ interface LocationHistory {
     accuracyInMeters?: number;
     distanceInBetween?: number;
     timeInBetween?: number;
+    locationSource?: LocationSource
 }
 
 interface LocationFetcherState {
@@ -22,61 +23,87 @@ interface LocationFetcherState {
     isGeoLoading: boolean;
 }
 
+enum LocationSource {
+    PREDEFINED = 'predefined',
+    MANUAL = 'manual',
+    VISIBILITY_CHANGE = 'visibility_change',
+    PAGE_ENTER = 'page_enter'
+}
+
 export class LocationFetcher extends React.Component<any, LocationFetcherState> {
+    private storageKeys = {
+        history: 'location_history',
+        permission: 'location_permission'
+    };
+
     public constructor(props: any) {
         super(props);
 
+        this.setInitialLocalStorage();
+
         this.state = {
-            history: [{
-                date: new Date(),
-                location: {
-                    latitude: 52.3089248,
-                    longitude: 4.7586070
-                },
-                accuracyInMeters: 26
-            }],
+            history: this.getHistoryFromStorage(),
             isGeoLoading: false
         };
 
-        this.fetchLocation = this.fetchLocation.bind(this);
-        this.geoSuccess = this.geoSuccess.bind(this);
         this.geoError = this.geoError.bind(this);
+        this.clearLocationHistory = this.clearLocationHistory.bind(this);
+        this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+    }
+
+    public componentDidMount() {
+        if (this.hasLocationPermission()) {
+            document.addEventListener('visibilitychange', this.handleVisibilityChange, false);
+        }
+    }
+
+    public componentDidUpdate() {
+        localStorage.setItem(this.storageKeys.history, JSON.stringify(this.state.history));
     }
 
     public render() {
         return (
             <Fragment>
                 <div className="o-location-fetcher">
-                    <button className={`a-btn o-location-fetcher__fetch ${this.state.isGeoLoading ? 'a-btn--loading': ''}`} onClick={!this.state.isGeoLoading ? this.fetchLocation : ()=>{}}>
-                        Fetch my location
-                        <span className="a-loader" />
-                    </button>
+                    <div className="o-location-fetcher__btn-row">
+                        <button className={`a-btn a-btn--primary o-location-fetcher__fetch ${this.state.isGeoLoading ? 'a-btn--loading': ''}`} onClick={!this.state.isGeoLoading ? this.fetchLocation.bind(this, LocationSource.MANUAL) : ()=>{}}>
+                            Fetch my location
+                            <span className="a-loader" />
+                        </button>
+                        <button className="a-btn a-btn--secondary" onClick={this.clearLocationHistory}>
+                            Clear location history
+                        </button>
+                    </div>
 
                     {this.state.history.length > 0 && 
-                        <table className="m-table o-location-fetcher__overview">
-                            <thead>
-                                <tr>
-                                    <th>Date/time</th>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
-                                    <th>Accuracy</th>
-                                    <th>Distance (relative to prev.)</th>
-                                    <th>Time (relative to prev.)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.history.map((historyItem: LocationHistory, index: number) => (
-                                    <tr key={index}>
-                                        <td>{this.getFormattedDate(historyItem.date)}</td>
-                                        <td>{historyItem.location.latitude}</td>
-                                        <td>{historyItem.location.longitude}</td>
-                                        <td>{historyItem.accuracyInMeters ? `${historyItem.accuracyInMeters}m` : '-'}</td>
-                                        <td>{typeof historyItem.distanceInBetween !== 'undefined' ? `${historyItem.distanceInBetween}m` : '-'}</td>
-                                        <td>{typeof historyItem.timeInBetween !== 'undefined' ? `${historyItem.timeInBetween}s` : '-'}</td>
+                        <div className="m-table__container">
+                            <table className="m-table o-location-fetcher__overview">
+                                <thead>
+                                    <tr>
+                                        <th>Date/time</th>
+                                        <th>Latitude</th>
+                                        <th>Longitude</th>
+                                        <th>Accuracy</th>
+                                        <th>Distance (relative to prev.)</th>
+                                        <th>Time (relative to prev.)</th>
+                                        <th>Location source</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {this.state.history.map((historyItem: LocationHistory, index: number) => (
+                                        <tr key={index}>
+                                            <td>{this.getFormattedDate(historyItem.date)}</td>
+                                            <td>{historyItem.location.latitude}</td>
+                                            <td>{historyItem.location.longitude}</td>
+                                            <td>{historyItem.accuracyInMeters ? `${historyItem.accuracyInMeters}m` : '-'}</td>
+                                            <td>{typeof historyItem.distanceInBetween !== 'undefined' ? `${historyItem.distanceInBetween}m` : '-'}</td>
+                                            <td>{typeof historyItem.timeInBetween !== 'undefined' ? `${historyItem.timeInBetween}s` : '-'}</td>
+                                            <td>{historyItem.locationSource}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     }
                 </div>
                 <ToastContainer />
@@ -84,13 +111,14 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
         );
     }
 
-    private fetchLocation(): void {
+    private fetchLocation(locationSource: LocationSource): void {
         this.setState({ isGeoLoading: true });
-        navigator.geolocation.getCurrentPosition(this.geoSuccess, this.geoError, { timeout: 5000, enableHighAccuracy: true });
+        navigator.geolocation.getCurrentPosition(this.geoSuccess.bind(this, locationSource), this.geoError, { timeout: 5000, enableHighAccuracy: true });
     }
 
-    private geoSuccess(location: Position): void {
-        this.addNewLocation(location);
+    private geoSuccess(locationSource: LocationSource, location: Position): void {
+        this.addNewLocation(location, locationSource);
+        localStorage.setItem(this.storageKeys.permission, JSON.stringify(true));
     }
 
     private geoError(error: PositionError): void {
@@ -101,7 +129,13 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
         this.setState({ isGeoLoading: false });
     }
 
-    private addNewLocation(location: Position): void {
+    private handleVisibilityChange(): void {
+        if (!document.hidden && !this.state.isGeoLoading) {
+            this.fetchLocation(LocationSource.VISIBILITY_CHANGE);
+        }
+    }
+
+    private addNewLocation(location: Position, locationSource?: LocationSource): void {
         const date = new Date();
 
         this.setState({
@@ -114,17 +148,14 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
                     },
                     accuracyInMeters: location.coords.accuracy,
                     distanceInBetween: this.calculateMetersBetween(location),
-                    timeInBetween: this.calculateSecondsBetween(date)
+                    timeInBetween: this.calculateSecondsBetween(date),
+                    locationSource: locationSource || undefined
                 },
                 ...this.state.history
             ],
             isGeoLoading: false
         });
     }
-
-    // private getDistanceBetween(location: Position) {
-        
-    // }
 
     private calculateMetersBetween(currentLocation: Position): number | undefined {
         if (this.state.history && this.state.history[0]) {
@@ -134,8 +165,55 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
         return undefined;
     }
 
-    // private getTimeBetween(currentDate: Date) {
-    // }
+    private getHistoryFromStorage(): LocationHistory[] {
+        const rawStorage = localStorage.getItem(this.storageKeys.history);
+
+        if (rawStorage) {
+            return JSON.parse(rawStorage);
+        }       
+        
+        return [];
+    }
+
+    private hasLocationPermission(): boolean {
+        const rawStorage = localStorage.getItem(this.storageKeys.permission);
+
+        if (rawStorage) {
+            return JSON.parse(rawStorage);
+        }
+
+        return false;
+    }
+
+    private clearLocationHistory(): void {
+        localStorage.setItem(this.storageKeys.history, JSON.stringify([]));
+        this.setState({ history: this.getHistoryFromStorage() });
+    }
+
+    private setInitialLocalStorage(): void {
+        this.addInitialHistoryItem();
+        this.setInitialPermissionState();
+    }
+
+    private addInitialHistoryItem(): void {
+        const history = this.getHistoryFromStorage();
+
+        if (history.length === 0) {
+            localStorage.setItem(this.storageKeys.history, JSON.stringify([{
+                date: new Date(),
+                location: {
+                    latitude: 52.3089248,
+                    longitude: 4.7586070
+                },
+                locationSource: LocationSource.PREDEFINED,
+                accuracyInMeters: 26
+            }]));
+        }
+    }
+
+    private setInitialPermissionState(): void {
+        localStorage.setItem(this.storageKeys.permission, JSON.stringify(false));
+    }
 
     private calculateSecondsBetween(currentDate: Date): number | undefined {
         if (this.state.history && this.state.history[0]) {

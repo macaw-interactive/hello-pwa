@@ -17,11 +17,13 @@
     "start:react": "node scripts/start.js",
     "start:scss": "npm run build:scss && node-sass-chokidar --include-path ./src/assets/css --include-path ./node_modules src/ -o ./src --watch --recursive",
     "build": "run-p build:*",
+    "build:build-time": "node scripts/create-env-file.js",
     "build:react": "react-scripts-ts build",
     "build:service-worker": "node ./scripts/generate-service-worker.js",
     "build:scss": "node-sass-chokidar --include-path ./src/assets/css --include-path ./node_modules src/ -o ./src",
     "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "eject": "react-scripts-ts eject",
+    "deploy": "npm run build && firebase deploy"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
