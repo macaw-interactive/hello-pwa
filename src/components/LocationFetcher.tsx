@@ -43,7 +43,7 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
 
         this.state = {
             history: this.getHistoryFromStorage(),
-            isGeoLoading: false
+            isGeoLoading: this.hasLocationPermission()
         };
 
         this.geoError = this.geoError.bind(this);
@@ -212,7 +212,9 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
     }
 
     private setInitialPermissionState(): void {
-        localStorage.setItem(this.storageKeys.permission, JSON.stringify(false));
+        if (!localStorage.getItem(this.storageKeys.permission)) {
+            localStorage.setItem(this.storageKeys.permission, JSON.stringify(false));
+        }
     }
 
     private calculateSecondsBetween(currentDate: Date): number | undefined {
