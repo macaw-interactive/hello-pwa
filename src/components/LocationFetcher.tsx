@@ -53,9 +53,8 @@ export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
     }
 
     public componentDidMount(): void {
-        // document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this, LocationSource.VISIBILITY_CHANGE), false);
-        // window.addEventListener('load', this.handleVisibilityChange.bind(this, LocationSource.PAGE_LOAD));
-        this.locationHasUpdated();
+        document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this, LocationSource.VISIBILITY_CHANGE), false);
+        window.addEventListener('load', this.handleVisibilityChange.bind(this, LocationSource.PAGE_LOAD));
     }
 
     public componentDidUpdate(): void {
@@ -134,11 +133,11 @@ export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
         this.setState({ isGeoLoading: false });
     }
 
-    // private handleVisibilityChange(locationSource: LocationSource): void {
-    //     if (!document.hidden && !this.state.isGeoLoading && this.hasLocationPermission()) {
-    //         this.fetchLocation(locationSource);
-    //     }
-    // }
+    private handleVisibilityChange(locationSource: LocationSource): void {
+        if (!document.hidden && !this.state.isGeoLoading && this.hasLocationPermission()) {
+            this.fetchLocation(locationSource);
+        }
+    }
 
     private addNewLocation(location: Position, locationSource?: LocationSource): void {
         const date = new Date();
@@ -205,15 +204,15 @@ export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
         return [];
     }
 
-    // private hasLocationPermission(): boolean {
-    //     const rawStorage = localStorage.getItem(this.storageKeys.permission);
+    private hasLocationPermission(): boolean {
+        const rawStorage = localStorage.getItem(this.storageKeys.permission);
 
-    //     if (rawStorage) {
-    //         return JSON.parse(rawStorage);
-    //     }
+        if (rawStorage) {
+            return JSON.parse(rawStorage);
+        }
 
-    //     return false;
-    // }
+        return false;
+    }
 
     private clearLocationHistory(): void {
         localStorage.setItem(this.storageKeys.history, JSON.stringify([]));
