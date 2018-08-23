@@ -8,6 +8,8 @@
     ]
   },
   "rules": {
-      "no-console": false
+      "no-console": false,
+      "member-access": true,
+      "typedef": [true, "call-signature"]
   }
 }

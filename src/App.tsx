@@ -6,7 +6,7 @@ import { LocationFetcher } from './components/LocationFetcher';
 import { BuildTime } from './components/BuildTime';
 
 class App extends React.Component {
-  public render() {
+  public render(): React.ReactNode {
     return (
       <div className="App">
         <BuildTime />
