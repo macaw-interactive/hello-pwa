@@ -5,21 +5,33 @@
   "author": "Macaw Interactive",
   "license": "ISC",
   "dependencies": {
+    "date-fns": "^1.29.0",
+    "haversine": "^1.1.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-scripts-ts": "2.17.0"
+    "react-scripts-ts": "2.17.0",
+    "react-toastify": "^4.2.0"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "react-scripts-ts build && node ./scripts/generate-service-worker.js",
+    "start": "run-p start:*",
+    "start:react": "node scripts/start.js",
+    "start:scss": "npm run build:scss && node-sass-chokidar --include-path ./src/assets/css --include-path ./node_modules src/ -o ./src --watch --recursive",
+    "build": "run-p build:*",
+    "build:build-time": "node scripts/create-env-file.js",
+    "build:react": "react-scripts-ts build",
+    "build:service-worker": "node ./scripts/generate-service-worker.js",
+    "build:scss": "node-sass-chokidar --include-path ./src/assets/css --include-path ./node_modules src/ -o ./src",
     "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "eject": "react-scripts-ts eject",
+    "deploy": "npm run build && firebase deploy"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
     "@types/node": "^10.7.1",
     "@types/react": "^16.4.11",
     "@types/react-dom": "^16.0.7",
+    "node-sass-chokidar": "^1.3.3",
+    "npm-run-all": "^4.1.3",
     "typescript": "^3.0.1",
     "workbox-build": "^3.4.1"
   }

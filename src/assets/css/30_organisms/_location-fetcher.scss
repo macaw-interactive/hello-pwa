@@ -1,0 +1,14 @@
+.o-location-fetcher {
+    &__overview {
+        text-align: left;
+        font-size: 13px;
+    }
+
+    &__btn-row {
+        margin: -5px;
+        
+        .a-btn {
+            margin: 5px;
+        }
+    }
+}

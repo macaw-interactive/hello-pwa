@@ -62,3 +62,6 @@ typings/
 
 # create-react-app build folder
 build/
+
+# firebase deployment folder
+.firebase/
