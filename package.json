@@ -15,7 +15,8 @@
     "web-push": "^3.3.2"
   },
   "scripts": {
-    "start": "run-p start:*",
+    "start": "node src/server/server.js",
+    "start-frontend": "run-p start:*",
     "start:react": "node scripts/start.js",
     "start:scss": "npm run build:scss && node-sass-chokidar --include-path ./src/assets/css --include-path ./node_modules src/ -o ./src --watch --recursive",
     "build": "run-p build:*",
