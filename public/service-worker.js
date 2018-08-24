@@ -62,15 +62,12 @@ self.addEventListener('push', function(event) {
   }
   var title = data.title;
   var message = data.message;
-  var icon = "img/FM_logo_2013.png";
-
+  
   self.clickTarget = data.clickTarget;
 
   event.waitUntil(self.registration.showNotification(title, {
       body: message,
       tag: 'push-demo',
-      icon: icon,
-      badge: icon
   }));
 });
 
