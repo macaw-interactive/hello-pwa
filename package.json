@@ -5,6 +5,7 @@
   "author": "Macaw Interactive",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.4",
     "date-fns": "^1.29.0",
     "express": "^4.16.3",
     "haversine": "^1.1.0",
