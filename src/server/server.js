@@ -54,11 +54,11 @@ app.get('/notify/all', function (req, res) {
   let clickTarget = req.query.clickTarget || `http://macaw.nl`;
   let title = req.query.title || `Push notification received!`;
 
-  subscribers.forEach(pushSubscription => {
+  subscribers.forEach(function(pushSubscription) {
       //Can be anything you want. No specific structure necessary.
       let payload = JSON.stringify({message : message, clickTarget: clickTarget, title: title});
 
-      webPush.sendNotification(pushSubscription, payload, {}).then((response) =>{
+      webpush.sendNotification(pushSubscription, payload, {}).then((response) =>{
           console.log("Status : "+util.inspect(response.statusCode));
           console.log("Headers : "+JSON.stringify(response.headers));
           console.log("Body : "+JSON.stringify(response.body));
