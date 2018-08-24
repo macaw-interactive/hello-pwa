@@ -1,4 +1,4 @@
-export default function registerServiceWorker() {
+export default function registerServiceWorker(): void {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       if (location.protocol.toLowerCase() === 'https:' || location.host.toLowerCase().indexOf('localhost') > -1) {

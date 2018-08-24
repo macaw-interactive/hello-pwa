@@ -30,15 +30,17 @@ enum LocationSource {
     PAGE_LOAD = 'page_load',
 }
 
-export class LocationFetcher extends React.Component<any, LocationFetcherState> {
-    private storageKeys = {
+export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
+    private readonly storageKeys = {
         history: 'location_history',
         permission: 'location_permission'
     };
 
-    public constructor(props: any) {
-        super(props);
+    // private readonly timeTrigger = 4*60*60; // 4 hours
+    private readonly timeTrigger = 1800; // Testing purposes
 
+    public constructor(props: {}) {
+        super(props);
         this.setInitialLocalStorage();
 
         this.state = {
@@ -50,16 +52,20 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
         this.clearLocationHistory = this.clearLocationHistory.bind(this);
     }
 
-    public componentDidMount() {
+    public componentDidMount(): void {
         document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this, LocationSource.VISIBILITY_CHANGE), false);
         window.addEventListener('load', this.handleVisibilityChange.bind(this, LocationSource.PAGE_LOAD));
     }
 
-    public componentDidUpdate() {
+    public componentDidUpdate(): void {
+        if (this.state.history.length !== this.getHistoryFromStorage().length) {
+            this.locationHasUpdated();
+        }
+
         localStorage.setItem(this.storageKeys.history, JSON.stringify(this.state.history));
     }
 
-    public render() {
+    public render(): React.ReactNode {
         return (
             <Fragment>
                 <div className="o-location-fetcher">
@@ -106,7 +112,7 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
                         </div>
                     }
                 </div>
-                <ToastContainer />
+                <ToastContainer position="bottom-right" />
             </Fragment>
         );
     }
@@ -123,9 +129,7 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
 
     private geoError(error: PositionError): void {
         console.log('Error fetching geo:', error.message);
-        toast.error(`Could not fetch location: ${error.message}`, {
-            position: 'bottom-right'
-        });
+        toast.error(`Could not fetch location: ${error.message}`);
         this.setState({ isGeoLoading: false });
     }
 
@@ -155,6 +159,31 @@ export class LocationFetcher extends React.Component<any, LocationFetcherState> 
             ],
             isGeoLoading: false
         });
+    }
+
+    // Todo: Register when notification has already been sent. Perhaps add a "route" concept? 
+    // For example: Add all relevant history records to a route and don't count it again  
+    private locationHasUpdated(): void {
+        const history = this.getHistoryFromStorage();
+        let totalSeconds = 0;
+        let totalMeters = 0;
+        let hasExeededTimeTrigger = () => totalSeconds > this.timeTrigger;
+
+        for (let i = 0; i < history.length; i++) {
+            const currentHistoryItem = history[i];
+            const timeDifference = currentHistoryItem.timeInBetween;
+            const distanceDifference = currentHistoryItem.distanceInBetween;
+                
+            if (typeof timeDifference !== 'undefined' && typeof distanceDifference !== 'undefined') {
+                totalSeconds = totalSeconds + timeDifference;
+                totalMeters = totalMeters + distanceDifference;
+            }
+        }
+        
+        // Do stuff here based on time and distance length
+        if (hasExeededTimeTrigger()) {
+            toast.warn('You drove more than 4 hours, take a break!');
+        }
     }
 
     private calculateMetersBetween(currentLocation: Position): number | undefined {
