@@ -4,7 +4,7 @@ import './assets/css/app.css';
 import logo from './assets/images/logo.svg';
 import { LocationFetcher } from './components/LocationFetcher';
 import { BuildTime } from './components/BuildTime';
-
+// Test
 class App extends React.Component {
   public render(): React.ReactNode {
     return (
