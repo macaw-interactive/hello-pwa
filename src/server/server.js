@@ -12,6 +12,7 @@ app.use(cors());
 // TODO: save subscribers somewhere
 let subscribers = [];
 
+// The reason for the email address is so that if a web push service needs to get in touch with the sender, they have some information that will enable them to. (https://developers.google.com/web/fundamentals/push-notifications/sending-messages-with-web-push-libraries)
 const vapidSubject = 'mailto:erwin.smit@macaw.nl';
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
