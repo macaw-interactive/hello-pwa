@@ -5,15 +5,19 @@
   "author": "Macaw Interactive",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.4",
     "date-fns": "^1.29.0",
+    "express": "^4.16.3",
     "haversine": "^1.1.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-scripts-ts": "2.17.0",
-    "react-toastify": "^4.2.0"
+    "react-toastify": "^4.2.0",
+    "web-push": "^3.3.2"
   },
   "scripts": {
-    "start": "run-p start:*",
+    "start": "node src/server/server.js",
+    "start-frontend": "run-p start:*",
     "start:react": "node scripts/start.js",
     "start:scss": "npm run build:scss && node-sass-chokidar --include-path ./src/assets/css --include-path ./node_modules src/ -o ./src --watch --recursive",
     "build": "run-p build:*",
