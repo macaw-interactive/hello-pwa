@@ -68,6 +68,9 @@ self.addEventListener('push', function(event) {
   event.waitUntil(self.registration.showNotification(title, {
       body: message,
       tag: 'push-demo',
+      badge: '/notification-badge.png',
+      icon: '/notification-icon.png',
+      image: '/notification-image.jpg'
   }));
 });
 
@@ -76,7 +79,7 @@ self.addEventListener('notificationclick', function(event) {
 
   event.notification.close();
 
-  if(clients.openWindow){
+  if (clients.openWindow){
       event.waitUntil(clients.openWindow(self.clickTarget));
   }
 });

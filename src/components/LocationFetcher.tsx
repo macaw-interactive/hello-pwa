@@ -69,7 +69,7 @@ export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
         return (
             <Fragment>
                 <div className="o-location-fetcher">
-                    <div className="o-location-fetcher__btn-row">
+                    <div className="o-location-fetcher__btn-row a-btn__row">
                         <button className={`a-btn a-btn--primary o-location-fetcher__fetch ${this.state.isGeoLoading ? 'a-btn--loading': ''}`} onClick={!this.state.isGeoLoading ? this.fetchLocation.bind(this, LocationSource.MANUAL) : ()=>{}}>
                             Fetch my location
                             <span className="a-loader" />

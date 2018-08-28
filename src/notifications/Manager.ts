@@ -5,7 +5,7 @@ export class NotificationManager {
         if ('serviceWorker' in navigator) {
 
             navigator.serviceWorker.ready.then((reg: ServiceWorkerRegistration) => {
-              var subscribeParams: { userVisibleOnly: boolean, applicationServerKey: undefined | Uint8Array } = {
+              var subscribeParams: PushSubscriptionOptionsInit = {
                 userVisibleOnly: true,
                 applicationServerKey: undefined
               };
@@ -63,6 +63,7 @@ export class NotificationManager {
           console.log('Permission wasn\'t granted. Allow a retry.');
           return;
         }
+        
         if (result === 'default') {
           console.log('The permission request was dismissed.');
           return;

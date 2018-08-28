@@ -20,13 +20,15 @@ class App extends React.Component {
   public render(): React.ReactNode {
     return (
       <div className="App">
-        <button onClick={this.requestPermission}>Request notification permission</button>
         <BuildTime />
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <div className="a-container">
+          <div className="a-btn__row">
+            <button className="a-btn a-btn--primary" onClick={this.requestPermission}>Request notification permission</button>
+          </div>
           <LocationFetcher />
         </div>
       </div>

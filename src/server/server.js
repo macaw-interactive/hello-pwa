@@ -50,6 +50,7 @@ app.post('/unsubscribe', function (req, res) {
   res.send('Subscription removed!');
 });
 
+// E.g. /notify/all?title=Take%20a%20break!&message=We%20found%20some%20nice%20campings%20nearby.%20Come%20take%20a%20look.&clickTarget=http://www.nu.nl
 app.get('/notify/all', function (req, res) {
   let message = req.query.message || `test test test`;
   let clickTarget = req.query.clickTarget || `http://macaw.nl`;

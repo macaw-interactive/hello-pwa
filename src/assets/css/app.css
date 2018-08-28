@@ -421,6 +421,10 @@ img {
       background-color: #61DAFB; }
     .a-btn--loading .a-loader {
       opacity: 1; }
+  .a-btn__row {
+    margin: -5px; }
+    .a-btn__row .a-btn {
+      margin: 5px; }
 
 .a-container {
   padding: 20px; }
@@ -482,11 +486,6 @@ img {
 .o-location-fetcher__overview {
   text-align: left;
   font-size: 13px; }
-
-.o-location-fetcher__btn-row {
-  margin: -5px; }
-  .o-location-fetcher__btn-row .a-btn {
-    margin: 5px; }
 
 .App {
   text-align: center; }
