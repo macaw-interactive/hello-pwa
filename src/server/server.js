@@ -2,7 +2,8 @@ const express = require('express');
 const webpush = require('web-push');
 const bodyParser = require('body-parser')
 const util = require('util');
-var cors = require('cors');
+const cors = require('cors');
+const fetch = require('node-fetch');
 
 require('dotenv').config();
 
@@ -72,6 +73,27 @@ app.get('/notify/all', function (req, res) {
   });
 
   res.send('Notification sent!');
+});
+
+// E.g. /weather?lon=4.7023787&lat=52.2910026
+app.get('/weather', function(req, res) {
+    const key = '6eccf768843d468db0d141839182808';
+    const lat = req.query.lat;
+    const lon = req.query.lon;
+
+    fetch(`http://api.apixu.com/v1/forecast.json?key=${key}&q=${lat},${lon}&days=2`).then(function(res) { return res.json(); }).then(function(data) {
+        const forecast = data.forecast.forecastday[data.forecast.forecastday.length-1];
+        const temperature = parseFloat(forecast.day.avgtemp_c);
+        const cold = temperature <= 18;
+        const message = cold ? 'It will be a cold, take a coat.' : 'It will be warm, don\'t forget your sunglasses!';
+
+        let payload = JSON.stringify({message : message, title: `Your holiday temperature will be ${temperature} degrees!`});
+        subscribers.forEach(function(pushSubscription) {
+            webpush.sendNotification(pushSubscription, payload, {});
+        });
+    });
+
+    res.send('Latitude: ' + lat + ', longitude: ' + lon);
 });
 
 app.get('/', (req, res) => res.send('Hello World!'))
