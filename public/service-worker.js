@@ -37,7 +37,17 @@ self.addEventListener('install', function(event) {
     .then(function(cache) {
       return cache.addAll(['index.html']);
     })
+    .then(function() {
+      return self.skipWaiting();
+    })
   );
+});
+
+self.addEventListener('activate', function(event) {
+	// `claim()` sets this worker as the active worker for all clients that
+	// match the workers scope and triggers an `oncontrollerchange` event for
+	// the clients.
+	return self.clients.claim();
 });
 
 // Get offline page from cache when trying to fetch a 'navigate' resource (read page) and it fails (read user is offline)

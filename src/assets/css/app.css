@@ -462,6 +462,23 @@ img {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg); } }
 
+.m-menu {
+  background-color: #333;
+  color: #888; }
+  .m-menu ul {
+    padding: 0;
+    margin: 0; }
+  .m-menu li {
+    list-style: none; }
+  .m-menu li > a {
+    display: block;
+    padding: 4px; }
+    .m-menu li > a.active {
+      color: #FFF; }
+    .m-menu li > a:hover {
+      text-decoration: none;
+      background-color: #3a3a3a; }
+
 .m-table {
   border-collapse: collapse;
   border-spacing: 0;

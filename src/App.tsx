@@ -2,17 +2,11 @@ import * as React from 'react';
 import './assets/css/app.css';
 
 import logo from './assets/images/logo.svg';
-import { LocationFetcher } from './components/LocationFetcher';
 import { BuildTime } from './components/BuildTime';
 import { NotificationManager } from './notifications/Manager';
+import { ApplicationRoutes } from './Routes';
 
 class App extends React.Component {
-  constructor(props: {}) {
-    super(props);
-
-    this.requestPermission = this.requestPermission.bind(this);
-  }
-
   public componentDidMount(): void {
     NotificationManager.subscribeUser();
   }
@@ -25,18 +19,9 @@ class App extends React.Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <div className="a-container">
-          <div className="a-btn__row">
-            <button className="a-btn a-btn--primary" onClick={this.requestPermission}>Request notification permission</button>
-          </div>
-          <LocationFetcher />
-        </div>
+        <ApplicationRoutes />
       </div>
     );
-  }
-
-  private requestPermission(): void {
-    NotificationManager.requestPermission();
   }
 }
 
