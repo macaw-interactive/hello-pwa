@@ -65,3 +65,6 @@ build/
 
 # firebase deployment folder
 .firebase/
+
+# nedb database
+subscribers.db

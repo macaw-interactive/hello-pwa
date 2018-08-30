@@ -3,14 +3,9 @@ import './assets/css/app.css';
 
 import logo from './assets/images/logo.svg';
 import { BuildTime } from './components/BuildTime';
-import { NotificationManager } from './notifications/Manager';
 import { ApplicationRoutes } from './Routes';
 
 class App extends React.Component {
-  public componentDidMount(): void {
-    NotificationManager.subscribeUser();
-  }
- 
   public render(): React.ReactNode {
     return (
       <div className="App">

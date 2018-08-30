@@ -3,11 +3,13 @@ import { UrlB64 } from './UrlB64';
 const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://hellopwa.azurewebsites.net';
 
 export class NotificationManager {
+    // We need to save the endpoint somewhere else. We need to save it per client as unique identifier...
     private static endpoint: string;
 
-    public static subscribeUser(): void {
-        if ('serviceWorker' in navigator) {
+    public static subscribe(): Promise<{}> {
+      return new Promise((resolve, reject) => { 
 
+        if ('serviceWorker' in navigator) {
             navigator.serviceWorker.ready.then((reg: ServiceWorkerRegistration) => {
               var subscribeParams: PushSubscriptionOptionsInit = {
                 userVisibleOnly: true,
@@ -29,13 +31,29 @@ export class NotificationManager {
                       NotificationManager.sendSubscriptionToServer(NotificationManager.endpoint, key, auth);
                       // isSubscribed = true;
                       // makeButtonUnsubscribable();
+
+                      resolve();
                   })
                   .catch(e => {
                       // A problem occurred with the subscription.
                       console.log('Unable to subscribe to push.', e);
+                      reject();
                   });
             });
           }
+      });
+    }
+
+    public static unsubscribe(): Promise<{}> {
+      return fetch(`${baseUrl}/unsubscribe`, {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: NotificationManager.endpoint
+        })
+      });
     }
 
     public static sendSubscriptionToServer(endpoint: string, key: ArrayBuffer | null, auth: ArrayBuffer | null): void {
@@ -72,7 +90,7 @@ export class NotificationManager {
         }
       });
   
-      NotificationManager.subscribeUser();
+      NotificationManager.subscribe();
     }
 
     public static holidayFaker(): void {        
@@ -94,5 +112,22 @@ export class NotificationManager {
           name: name
         })
       });
+    }
+
+    public static getSubscribedStatus(): Promise<boolean|undefined> {
+      if (NotificationManager.endpoint) {
+        return fetch(`${baseUrl}/is-subscribed`, {
+            method: 'post',
+            headers: {
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              endpoint: NotificationManager.endpoint
+            })
+          })
+          .then(res => res.json());
+      } else {
+        return new Promise((resolve, reject) => { resolve(undefined); });
+      }
     }
 }
