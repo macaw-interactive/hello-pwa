@@ -7,6 +7,7 @@ export class Notifications extends React.Component {
 
         this.requestPermission = this.requestPermission.bind(this);
         this.holidayFaker = this.holidayFaker.bind(this);
+        this.broadcast = this.broadcast.bind(this);
     }
 
     public render(): React.ReactNode {
@@ -14,17 +15,22 @@ export class Notifications extends React.Component {
             <div className="a-container">
                 <div className="a-btn__row">
                     <button className="a-btn a-btn--primary" onClick={this.requestPermission}>Request notification permission</button>
+                    <button className="a-btn a-btn--primary" onClick={this.broadcast}>Broadcast notification</button>
                     <button className="a-btn a-btn--primary" onClick={this.holidayFaker}>Holiday faker</button>
                 </div>
             </div>
         )
     }
 
+    private broadcast(): void {
+        NotificationManager.broadcastNotification();
+    }
+
     private holidayFaker(): void {
-        fetch('https://hellopwa.azurewebsites.net/weather?lon=4.7023787&lat=52.2910026');
+        NotificationManager.holidayFaker();
     }
 
     private requestPermission(): void {
-      NotificationManager.requestPermission();
+        NotificationManager.requestPermission();
     }
 }

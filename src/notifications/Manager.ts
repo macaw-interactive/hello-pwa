@@ -1,6 +1,10 @@
 import { UrlB64 } from './UrlB64';
 
+const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://hellopwa.azurewebsites.net';
+
 export class NotificationManager {
+    private static endpoint: string;
+
     public static subscribeUser(): void {
         if ('serviceWorker' in navigator) {
 
@@ -19,10 +23,10 @@ export class NotificationManager {
         
                       // Update status to subscribe current user on server, and to let
                       // other users know this user has subscribed
-                      var endpoint = subscription.endpoint;
+                      NotificationManager.endpoint = subscription.endpoint;
                       var key = subscription.getKey('p256dh');
                       var auth = subscription.getKey('auth');
-                      NotificationManager.sendSubscriptionToServer(endpoint, key, auth);
+                      NotificationManager.sendSubscriptionToServer(NotificationManager.endpoint, key, auth);
                       // isSubscribed = true;
                       // makeButtonUnsubscribable();
                   })
@@ -42,7 +46,7 @@ export class NotificationManager {
         var encodedKey = btoa(String.fromCharCode.apply(null, new Uint8Array(key)));
         var encodedAuth = btoa(String.fromCharCode.apply(null, new Uint8Array(auth)));
       
-        fetch('https://hellopwa.azurewebsites.net/subscribe', {
+        fetch(`${baseUrl}/subscribe`, {
           method: 'post',
           headers: {
             'Content-type': 'application/json'
@@ -52,8 +56,6 @@ export class NotificationManager {
             auth: encodedAuth, 
             notificationEndPoint: endpoint
           })
-        }).then(result => {
-          console.log('result', result);
         });
     }
 
@@ -71,5 +73,26 @@ export class NotificationManager {
       });
   
       NotificationManager.subscribeUser();
+    }
+
+    public static holidayFaker(): void {        
+      fetch(`${baseUrl}/weather?lon=4.7023787&lat=52.2910026`);
+    }
+
+    public static broadcastNotification(): void {
+      fetch(`${baseUrl}/notify/all?title=Take%20a%20break!&message=We%20found%20some%20nice%20campings%20nearby.%20Come%20take%20a%20look.&clickTarget=https://www.macaw.nl`);
+    }
+
+    public static saveName(name: string): void {
+      fetch(`${baseUrl}/save/name`, {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: NotificationManager.endpoint,
+          name: name
+        })
+      });
     }
 }

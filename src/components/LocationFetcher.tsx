@@ -88,6 +88,7 @@ export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
                                         <th>Date/time</th>
                                         <th>Latitude</th>
                                         <th>Longitude</th>
+                                        <th>Location</th>
                                         <th>Accuracy</th>
                                         <th>Distance (relative to prev.)</th>
                                         <th>Time (relative to prev.)</th>
@@ -101,6 +102,7 @@ export class LocationFetcher extends React.Component<{}, LocationFetcherState> {
                                             <td>{this.getFormattedDate(historyItem.date)}</td>
                                             <td>{historyItem.location.latitude}</td>
                                             <td>{historyItem.location.longitude}</td>
+                                            <td><a href={`http://maps.google.com/maps?q=loc:${historyItem.location.latitude},${historyItem.location.longitude}`} target="_blank">(Google Maps)</a></td>
                                             <td>{historyItem.accuracyInMeters ? `${historyItem.accuracyInMeters}m` : '-'}</td>
                                             <td>{typeof historyItem.distanceInBetween !== 'undefined' ? `${historyItem.distanceInBetween}m` : '-'}</td>
                                             <td>{typeof historyItem.timeInBetween !== 'undefined' ? `${historyItem.timeInBetween}s` : '-'}</td>

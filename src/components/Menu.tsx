@@ -8,6 +8,7 @@ export class Menu extends React.Component {
                 <ul>
                     <li><NavLink to="/" exact={true} activeClassName="active">Home</NavLink></li>
                     <li><NavLink to="/notifications" activeClassName="active">Notifications</NavLink></li>
+                    <li><NavLink to="/settings" activeClassName="active">Settings</NavLink></li>
                 </ul>
             </div>
         );
