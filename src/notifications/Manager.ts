@@ -2,9 +2,10 @@ import { UrlB64 } from './UrlB64';
 
 const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://hellopwa.azurewebsites.net';
 
-export class NotificationManager {
-    // We need to save the endpoint somewhere else. We need to save it per client as unique identifier...
-    private static endpoint: string;
+export class NotificationManager {   
+    private static readonly storageKeys = {
+      subscription_endpoint: 'subcription_endpoint'
+    };
 
     public static subscribe(): Promise<{}> {
       return new Promise((resolve, reject) => { 
@@ -25,10 +26,12 @@ export class NotificationManager {
         
                       // Update status to subscribe current user on server, and to let
                       // other users know this user has subscribed
-                      NotificationManager.endpoint = subscription.endpoint;
+                      var endpoint = subscription.endpoint;
                       var key = subscription.getKey('p256dh');
                       var auth = subscription.getKey('auth');
-                      NotificationManager.sendSubscriptionToServer(NotificationManager.endpoint, key, auth);
+
+                      localStorage.setItem(NotificationManager.storageKeys.subscription_endpoint, JSON.stringify(endpoint));
+                      NotificationManager.sendSubscriptionToServer(endpoint, key, auth);
                       // isSubscribed = true;
                       // makeButtonUnsubscribable();
 
@@ -51,7 +54,7 @@ export class NotificationManager {
           'Content-type': 'application/json'
         },
         body: JSON.stringify({
-          endpoint: NotificationManager.endpoint
+          endpoint: NotificationManager.getUserId()
         })
       });
     }
@@ -77,7 +80,7 @@ export class NotificationManager {
         });
     }
 
-    public static requestPermission(): void {
+    public static requestPermission(): Promise<{}> {
       Notification.requestPermission().then(function(result: NotificationPermission): void {
         if (result === 'denied') {
           console.log('Permission wasn\'t granted. Allow a retry.');
@@ -90,7 +93,7 @@ export class NotificationManager {
         }
       });
   
-      NotificationManager.subscribe();
+      return NotificationManager.subscribe();
     }
 
     public static holidayFaker(): void {        
@@ -108,26 +111,36 @@ export class NotificationManager {
           'Content-type': 'application/json'
         },
         body: JSON.stringify({
-          endpoint: NotificationManager.endpoint,
+          endpoint: NotificationManager.getUserId(),
           name: name
         })
       });
     }
 
     public static getSubscribedStatus(): Promise<boolean|undefined> {
-      if (NotificationManager.endpoint) {
+      if (NotificationManager.getUserId()) {
         return fetch(`${baseUrl}/is-subscribed`, {
             method: 'post',
             headers: {
               'Content-type': 'application/json'
             },
             body: JSON.stringify({
-              endpoint: NotificationManager.endpoint
+              endpoint: NotificationManager.getUserId()
             })
           })
           .then(res => res.json());
       } else {
         return new Promise((resolve, reject) => { resolve(undefined); });
       }
+    }
+
+    private static getUserId(): string | undefined {
+      const rawStorage = localStorage.getItem(NotificationManager.storageKeys.subscription_endpoint);
+
+      if (rawStorage) {
+          return JSON.parse(rawStorage);
+      }       
+      
+      return undefined;
     }
 }

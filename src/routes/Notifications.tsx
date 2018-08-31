@@ -14,7 +14,6 @@ export class Notifications extends React.Component<{}, NotificationsState> {
             subscribed: undefined
         };
 
-        this.requestPermission = this.requestPermission.bind(this);
         this.holidayFaker = this.holidayFaker.bind(this);
         this.broadcast = this.broadcast.bind(this);
         this.unsubscribe = this.unsubscribe.bind(this);
@@ -22,7 +21,7 @@ export class Notifications extends React.Component<{}, NotificationsState> {
     }
 
     public componentDidMount(): void {
-        this.getSubscribedStatus();            
+        this.getSubscribedStatus();
     }
 
     public render(): React.ReactNode {
@@ -33,8 +32,6 @@ export class Notifications extends React.Component<{}, NotificationsState> {
 
 
                 <div className="a-btn__row">
-                    <button className="a-btn a-btn--primary" onClick={this.requestPermission}>Request notification permission</button>
-                    <br />
                     <button className="a-btn a-btn--primary" onClick={this.broadcast}>Broadcast notification</button>
                     <button className="a-btn a-btn--primary" onClick={this.holidayFaker}>Holiday faker</button>
                     <br />
@@ -73,7 +70,7 @@ export class Notifications extends React.Component<{}, NotificationsState> {
     }
 
     private subscribe(): void {
-        NotificationManager.subscribe().then(() => {
+        NotificationManager.requestPermission().then(() => {
             this.getSubscribedStatus();
             toast.success(`Subscribed to notifications`);
         });
@@ -85,9 +82,5 @@ export class Notifications extends React.Component<{}, NotificationsState> {
 
     private holidayFaker(): void {
         NotificationManager.holidayFaker();
-    }
-
-    private requestPermission(): void {
-        NotificationManager.requestPermission();
     }
 }
